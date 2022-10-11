@@ -5,11 +5,11 @@ csv = require('csv');
 iconv = require("iconv-lite")
 const axios = require('axios').default;
 
-//create db
+// create db
 // var con = mysql.createConnection({
 //     host: "localhost",
 //     user: "root",
-//     password: "1234"
+//     password: "םישג7788"
 //   });
   
 // con.connect(function(err) {
@@ -24,42 +24,20 @@ const axios = require('axios').default;
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "םישג7788",
   database: "Cities"
 });
 
 //create table
-// con.connect(function(err) {
-//   if (err) throw err;
-//   console.log("Connected!");
-//   var sql = "CREATE TABLE Cities (id INT AUTO_INCREMENT PRIMARY KEY, name NVARCHAR(255) NOT NULL UNIQUE, size INT, religion VARCHAR(255), `ages_0-5` INT, `ages_6-18` INT, `ages_19-45` INT, `ages_46-55` INT, `ages_56-64` INT, `ages_65-inf` INT)";
-//   con.query(sql, function (err, result) {
-//     if (err) throw err;
-//     console.log("Table created");
-//   });
-// });
-
-// var i=0;
-
-// fs.createReadStream("city_ages.csv")
-//   .pipe(parse({ delimiter: ",", relax_quotes: true, from_line: 2 ,
-//   comment: '#',
-//   encoding: 'UTF-8'}))
-//   .on("data", function (row) {
-//     if (i < 100) {
-//       var sql = "INSERT INTO Cities (name, size, `ages_0-5`, `ages_6-18`, `ages_19-45`, `ages_46-55`, `ages_56-64`, `ages_65-inf`)"+ 
-//       " VALUES (`"+row[1]+"`, "+row[8]+", "+row[9]+", "+row[10]+", "+row[11]+", "+row[12]+", "+row[13]+", "+row[14]+")";
-//       con.query(sql, function (err, result) {
-//         if (err) throw err;
-//         console.log("1 record inserted");
-//       });
-//     console.log(row);
-//     i++;
-//   }
-// })
-//   .on("error", function (error) {
-//     console.log(error.message);
-//   });
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+  var sql = "CREATE TABLE Cities (id INT AUTO_INCREMENT PRIMARY KEY, name NVARCHAR(255) NOT NULL UNIQUE, size INT, religion VARCHAR(255), `ages_0-5` INT, `ages_6-18` INT, `ages_19-45` INT, `ages_46-55` INT, `ages_56-64` INT, `ages_65-inf` INT)";
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Table created");
+  });
+});
 
 //get the cities' religion
 function religion(page){
@@ -100,9 +78,9 @@ axios({
   });
 }
 
-// for (let index = 1; index < 6; index++) {
-//   religion(index);
-// }
+for (let index = 1; index < 6; index++) {
+  religion(index);
+}
 
 //get cities' ages
 axios({
@@ -120,8 +98,8 @@ axios({
     var middle = isNaN(parseInt(city.גיל_46_55)) ? 0 : parseInt(city.גיל_46_55);
     var gold = isNaN(parseInt(city.גיל_56_64)) ? 0 : parseInt(city.גיל_56_64);
     var old = isNaN(parseInt(city.גיל_65_פלוס)) ? 0 : parseInt(city.גיל_65_פלוס);
-    var sql = "UPDATE Cities SET `ages_0-5` = "+ todller + 
-    ", `ages_6-18` = " + teen + 
+    var sql = "UPDATE Cities SET `ages_0-5` = "+ todller +
+    ", `ages_6-18` = " + teen +
     ", `ages_19-45` = " + adult+
     ", `ages_46-55` = "+middle+
     ", `ages_56-64` = "+gold+
@@ -137,45 +115,45 @@ axios({
       }
   }
 })
-
-//send cities to kafka
-const uuid = require("uuid");
-const Kafka = require("node-rdkafka");
-
-const kafkaConf = {
-  "group.id": "cloudkarafka-example",
-  "metadata.broker.list": "	dory.srvs.cloudkafka.com",
-  "socket.keepalive.enable": true,
-  "security.protocol": "SASL_SSL",
-  "sasl.mechanisms": "SCRAM-SHA-256",
-  "sasl.username": "4ddaxdn5",
-  "sasl.password": "76GXA4beiAeGYzQW_MCR-o1Ugi08DL9G",
-  "debug": "generic,broker,security"
-};
-
-const prefix = "mo0oa5gi-";
-const topic = `${prefix}new`;
-const producer = new Kafka.Producer(kafkaConf);
-
-const genMessage = m => new Buffer.alloc(m.length,m);
-
-producer.on("ready", function(arg) {
-  console.log(`producer is ready.`);
-});
-producer.connect();
-
-var cities = []
-
-con.query("SELECT name FROM Cities", function (err, result, fields) {
-  if (err) throw err;
-  for(var i=0; i<result.length;i++){
-    cities.push(result[i].name);
-  }
-});
-
-module.exports.publish= function()
-{   
-  m=JSON.stringify(cities);
-  producer.produce(topic, -1, genMessage(m), uuid.v4());  
-  //producer.disconnect();   
-}
+//
+// //send cities to kafka
+// const uuid = require("uuid");
+// const Kafka = require("node-rdkafka");
+//
+// const kafkaConf = {
+//   "group.id": "cloudkarafka-example",
+//   "metadata.broker.list": "	dory.srvs.cloudkafka.com",
+//   "socket.keepalive.enable": true,
+//   "security.protocol": "SASL_SSL",
+//   "sasl.mechanisms": "SCRAM-SHA-256",
+//   "sasl.username": "4ddaxdn5",
+//   "sasl.password": "76GXA4beiAeGYzQW_MCR-o1Ugi08DL9G",
+//   "debug": "generic,broker,security"
+// };
+//
+// const prefix = "mo0oa5gi-";
+// const topic = `${prefix}new`;
+// const producer = new Kafka.Producer(kafkaConf);
+//
+// const genMessage = m => new Buffer.alloc(m.length,m);
+//
+// producer.on("ready", function(arg) {
+//   console.log(`producer is ready.`);
+// });
+// producer.connect();
+//
+// var cities = []
+//
+// con.query("SELECT name FROM Cities", function (err, result, fields) {
+//   if (err) throw err;
+//   for(var i=0; i<result.length;i++){
+//     cities.push(result[i].name);
+//   }
+// });
+//
+// module.exports.publish= function()
+// {
+//   m=JSON.stringify(cities);
+//   producer.produce(topic, -1, genMessage(m), uuid.v4());
+//   //producer.disconnect();
+// }

@@ -1,8 +1,16 @@
 const { MongoClient } = require("mongodb");
+var mysql = require('mysql');
 
 const uri =
   "mongodb+srv://shahar:1234@cluster0.fffofzc.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
+
+var con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "1234",
+    database: "Cities"
+  });
 
 var info = {};//will be built like this: {date:brach:flavor:amount} (dict inside dict inside dict)
 
@@ -56,15 +64,37 @@ async function CreateCSV(){
                     }else{
                         var season = "spring";
                     }
-                    var holliday = info[date][holliday];//holliday
+                    var holliday = info[date]["holliday"];//holliday
                     var weather = info[date]["weather"];//weather
 
-                    //todo:sql and then flavor and amount
+                    //extract from sql
+                    var size;
+                    var religion;
+                    var todller;
+                    var teen;
+                    var adult;
+                    var middle;
+                    var gold;
+                    var old;
+                    con.connect(function(err) {
+                        if (err) throw err;
+                        con.query("SELECT * FROM Cities WHERE name = '"+branch+"'", function (err, result, fields) {
+                          if (err) throw err;
+                          size = result[0].size;
+                          religion = result[0].religion;
+                          todller = (result[0]["ages_0-5"] == null) ? ((1/6) * 100) : ((result[0]["ages_0-5"]/size) * 100);
+                          teen = (result[0]["ages_6-18"] == null) ? ((1/6) * 100) : ((result[0]["ages_0-5"]/size) * 100);
+                          adult = (result[0]["ages_19-45"] == null) ? ((1/6) * 100) : ((result[0]["ages_0-5"]/size) * 100);
+                          middle = (result[0]["ages_46-55"] == null) ? ((1/6) * 100) : ((result[0]["ages_0-5"]/size) * 100);
+                          gold = (result[0]["ages_56-64"] == null) ? ((1/6) * 100) : ((result[0]["ages_0-5"]/size) * 100);
+                          old = (result[0]["ages_65-inf"] == null) ? ((1/6) * 100) : ((result[0]["ages_0-5"]/size) * 100);
+                        });
+                      });
+                    csv+=day+","+month+","+season+","+holliday+","+weather+","+size+","+religion+","+todller+","+teen+","+adult+","+middle+","+gold+","+old+","+flavor+","+info[date][branch][flavor]+"\r\n";
                 }
             }
         }
-
-        fs.writeFileSync("demoB.csv", csv);
+        fs.writeFileSync("model.csv", csv);
       } finally {
         await client.close();
       }

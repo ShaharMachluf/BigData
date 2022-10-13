@@ -25,20 +25,6 @@ function holliday(date){
         });
 }
 
-async function CreateCSV(){
-    try {
-        const database = client.db("ice-cream");
-        const orders = database.collection("orders");
-        const cursor = orders.find();
-    
-        var csv = "branch,date,weather,holliday,num_scoops,flavor";
-        await cursor.forEach(doc => csv+=doc.branch+","+doc.date+","+doc.weather+","+doc.holliday+","+doc.num_scoops+","+doc.flavor+ "\r\n");
-        fs.writeFileSync("demoB.csv", csv);
-      } finally {
-        await client.close();
-      }
-}
-
 async function run() {
   try {
     //connect to db

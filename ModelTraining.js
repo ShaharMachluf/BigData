@@ -1,9 +1,12 @@
 const { MongoClient } = require("mongodb");
 var mysql = require('mysql');
+var bigml = require('bigml');
 
 const uri =
   "mongodb+srv://shahar:1234@cluster0.fffofzc.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
+
+var curr_model;
 
 var con = mysql.createConnection({
     host: "localhost",
@@ -98,4 +101,39 @@ async function CreateCSV(){
       } finally {
         await client.close();
       }
+}
+
+//when the "train model" button is pressed this is the function that it triggers
+function TrainModel(){
+    var connection = new bigml.BigML('SHAHAR6261',
+                             '68f6776d831d3a4c3aed814e2ef8e329fc0c9ab8');
+    CreateCSV();
+    var source = new bigml.Source();
+    source.create('./model.csv', function(error, sourceInfo) {
+      if (!error && sourceInfo) {
+        var dataset = new bigml.Dataset();
+        dataset.create(sourceInfo, function(error, datasetInfo) {
+          if (!error && datasetInfo) {
+            var model = new bigml.Model();
+            model.create(datasetInfo, function (error, modelInfo) {
+              if (!error && modelInfo) {
+                curr_model = modelInfo;
+                return curr_model;
+              }
+            });
+          }
+        });
+      }
+    });
+}
+
+//given data predicts the amount
+//param data: {date, branch, flavor}
+function PredictAmount(data){
+    var prediction = new bigml.Prediction();
+                prediction.create(modelInfo, data, function(error, predictInfo){
+                    if(!error && predictInfo){
+                        return predictInfo;
+                    }
+                });
 }

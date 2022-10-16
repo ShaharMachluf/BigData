@@ -1,12 +1,16 @@
 var mysql = require('mysql');
 const myobject = require("./order");
-// const myobject = require('./order.js');
-// const kafk = require("./kafkaProduce");
 const cities = [];
 const flavors = ["Chocolate", "Lemon", "Vanilla", "Strawberry", "Halva", "Chocolate"]
 const seasons = [1, 2, 2, 2]
 const winter = [0, 1, 2, 9, 10, 11]
 const summer = [3, 4, 5, 6, 7, 8]
+const msgs=[`111`,`1222`,`333213`];
+const uuid = require("uuid");
+const Kafka = require("node-rdkafka");
+const kafkaApp = require('./kafkaApp');
+
+
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -63,13 +67,15 @@ function make_orders() {
     let my_order = new myobject.Order(myarray, date, cities[r_city], r_scoops);
     let str = my_order.toString();
     console.log(str)
-    // setTimeout(kafk.publish(str),1000);
+    kafkaApp.publish(str);
 }
 
 
 function bdika1(){
-    for (var i = 0; i < 1000; i++) {
+    for (var i = 0; i < 200; i++) {
         make_orders();
+        // producer.connect();
+        // setTimeout(kafk.publish(str),1000);
     }
 }
 
@@ -77,8 +83,7 @@ function bdika1(){
 function bdika() {
     while (true) {
         make_orders();
-        sleep(2000);
-
+        sleep(1000);
     }
 }
 setTimeout(bdika1, 1000)

@@ -16,7 +16,7 @@
     "kafka": "^0.2.3",
     "mongodb": "4.10",
     "mysql": "^2.18.1",
-    "node-fetch": "^3.2.10",
+    "node-fetch": "^2.6.7",
     "node-rdkafka": "^2.13.0",
     "uuid": "^9.0.0",
     "xhr2": "^0.2.1"

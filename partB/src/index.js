@@ -1,40 +1,85 @@
-import * as bootstrap from 'bootstrap';
-
 const redis = require('redis');
+
 const REEDIS_PORT = process.env.PORT || 6379;
 
 const client = redis.createClient('127.0.0.1', REEDIS_PORT);
-// (async () => {
-//     await
-client.connect();
-// })();
 
-const seasonname = client.get("season");
-// const seasonname = "סתיו";
+client.connect();
+// var RedisApp= require('./stam_redis')
+
+// document.getElementById("first").hidden=false
+// document.getElementById("second").hidden=true
+// document.getElementById("third").hidden=true
+
+var click_first= document.getElementById("mlai1");
+click_first.addEventListener("click", function (){
+    event.preventDefault();
+    document.getElementById("first").hidden=false
+    document.getElementById("second").hidden=true
+    document.getElementById("third").hidden=true
+},false)
+
+var click_second= document.getElementById("stores");
+click_second.addEventListener("click", function (){
+    event.preventDefault();
+    document.getElementById("first").hidden=true
+    document.getElementById("second").hidden=false
+    document.getElementById("third").hidden=true
+},false)
+
+var click_third= document.getElementById("amen");
+click_third.addEventListener("click", function (){
+    event.preventDefault();
+    document.getElementById("first").hidden=true
+    document.getElementById("second").hidden=true
+    document.getElementById("third").hidden=false
+},false)
+
+
+
+// const seasonname = client.get("season");
+const seasonname = "סתיו";
 const click_season = document.getElementById("season_click");
 click_season.addEventListener("click", function () {
     document.getElementById("season").innerHTML = seasonname;
 });
 
-const isHoliday = "כן";
+const isHoliday = "לא";
 const click_holiday = document.getElementById("holiday_click");
 click_holiday.addEventListener("click", function () {
     document.getElementById("holiday").innerHTML = isHoliday;
 });
-const lemon = 100;
-document.getElementById("lemon").innerHTML =
-//     client.set('lemon', function (error, response) {
-//     if (error) return console.error(error);
-//     console.log(response);
-// });
-    lemon;
-const strw = 100
+
+async function redis_get(key) {
+    const res = await client.get(key);
+    return res;
+}
+
+
+// const lemon = redis_get(" Lemon ");
+// var a;
+// lemon.then((res,err) => {
+//     // console.log(res)
+//     a = res;
+//     re
+// })
+// console.log(a)
+// setTimeout(() => {
+//     console.log(a)
+// }, 500)
+
+// redis_get(" Lemon ").then();
+
+var lemon=9752;
+document.getElementById("lemon").innerHTML = lemon;
+
+const strw = 8743
 document.getElementById("strw").innerHTML = strw;
-const choco = 100
+const choco = 7895
 document.getElementById("choco").innerHTML = choco;
-const vanila = 100
+const vanila = 5667
 document.getElementById("vanil").innerHTML = vanila;
-const halva = 100
+const halva = 4223
 document.getElementById("halva").innerHTML = halva;
 
 
@@ -49,17 +94,13 @@ function show_graph213() {
 
 function show_graph21() {
     var xyValues = [
-        {x: 50, y: 7},
-        {x: 60, y: 8},
-        {x: 70, y: 8},
-        {x: 80, y: 9},
-        {x: 90, y: 9},
-        {x: 100, y: 9},
-        {x: 110, y: 10},
-        {x: 120, y: 11},
-        {x: 130, y: 14},
-        {x: 140, y: 14},
-        {x: 150, y: 15}
+        {x: 1, y: 5},
+        {x: 2, y: 8},
+        {x: 3, y: 14},
+        {x: 4, y: 9},
+        {x: 5, y: 23},
+        {x: 6, y: 33},
+        {x: 7, y: 10}
     ];
 
     document.getElementById("graph21").innerHTML = new Chart("graph21", {
@@ -74,17 +115,23 @@ function show_graph21() {
         options: {
             legend: {display: false},
             scales: {
-                xAxes: [{ticks: {min: 40, max: 160}}],
-                yAxes: [{ticks: {min: 6, max: 16}}],
+                xAxes: [{ticks: {min: 1, max: 7}}],
+                yAxes: [{ticks: {min: 0, max: 100}}],
             }
         }
     });
 }
 
 function show_graph212() {
-    var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
-    var yValues = [55, 49, 44, 24, 15];
-    var barColors = ["red", "green", "blue", "orange", "brown"];
+    var xValues = ["Halva", "Lemon", "Chocolate", "Strawberry", "Vanilla"];
+    var yValues = [55, 49, 72, 14, 33];
+    var barColors = [
+        "#1c207e",
+        "#e3f83b",
+        "#97582b",
+        "#ef1e5d",
+        "#ffffff"
+    ];
 
     document.getElementById("graph213").innerHTML = new Chart("graph212", {
         type: "bar",
@@ -99,20 +146,20 @@ function show_graph212() {
             legend: {display: false},
             title: {
                 display: true,
-                text: "World Wine Production 2018"
+                text: "מלאי נוכחי בסניף נבחר"
             }
         }
     });
 }
 
-var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
-var yValues = [55, 49, 44, 24, 15];
+var xValues = ["Halva", "Lemon", "Chocolate", "Strawberry", "Vanilla"];
+var yValues = [halva, lemon, choco, strw, vanila];
 var barColors = [
-    "#b91d47",
-    "#00aba9",
-    "#2b5797",
-    "#e8c3b9",
-    "#1e7145"
+    "#1c207e",
+    "#e3f83b",
+    "#97582b",
+    "#ef1e5d",
+    "#ffffff"
 ];
 
 new Chart("graph1", {
@@ -127,7 +174,7 @@ new Chart("graph1", {
     options: {
         title: {
             display: true,
-            text: "World Wide Wine Production 2018"
+            text: "גרף מלאי כללי ברשת"
         }
     }
 });
@@ -139,7 +186,7 @@ var snif2 = document.getElementById("kind2");
 var snif2_txt = snif2.options[snif2.selectedIndex].text;
 
 var date_value = document.getElementById("date").value;
-document.getElementById("ddate").innerHTML = date_value;
+// document.getElementById("ddate").innerHTML = date_value;
 
 
 

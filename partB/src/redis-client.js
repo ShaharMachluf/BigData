@@ -6,7 +6,7 @@ const client = redis.createClient('127.0.0.1', REEDIS_PORT);
 client.connect();
 
 async function redis_zero() {
-    const flav_arr = [" Chocolate ", " Lemon ", " Vanilla ", " Strawberry ", " Halva "];
+    const flav_arr = ["Chocolate", "Lemon", "Vanilla", "Strawberry", "Halva"];
     for (let index = 0; index < 5; index++) {
         await client.set(flav_arr[index], 95*100);
     }
@@ -66,7 +66,7 @@ function religion(page) {
                 if (isNaN(size)) {
                     continue;
                 }
-                const flav_arr = [" Chocolate ", " Lemon ", " Vanilla ", " Strawberry ", " Halva "];
+                const flav_arr = ["Chocolate", "Lemon", "Vanilla", "Strawberry", "Halva"];
                 cities_counter++;
                 for (let index = 0; index < 5; index++) {
                     insert_redis(city.Name, flav_arr[index], 100);

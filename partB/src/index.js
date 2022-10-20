@@ -1,4 +1,5 @@
 const redis = require('redis');
+import {io} from "socket.io-client";
 
 const REEDIS_PORT = process.env.PORT || 6379;
 
@@ -6,35 +7,59 @@ const client = redis.createClient('127.0.0.1', REEDIS_PORT);
 
 client.connect();
 // var RedisApp= require('./stam_redis')
+const socket = io("http://localhost:3000");
+socket.on('connection');
+socket.on("data", async (msg) => {
+    console.log("Ciiii\n" + msg);
+    const msg_obj= (JSON.parse(msg))
+    const lemon = msg_obj.lemon;
+    document.getElementById("lemon").innerHTML = lemon;
+    const strw = msg_obj.strw
+    document.getElementById("strw").innerHTML = strw;
+    const choco = msg_obj.choco
+    document.getElementById("choco").innerHTML = choco;
+    const vanila = msg_obj.vanil
+    document.getElementById("vanil").innerHTML = vanila;
+    const halva = msg_obj.halva
+    document.getElementById("halva").innerHTML = halva;
+    if (document.getElementById("first").hidden==false){
+        show_main_graph(halva,lemon,choco,strw,vanila)
+    }
+});
 
-// document.getElementById("first").hidden=false
-// document.getElementById("second").hidden=true
-// document.getElementById("third").hidden=true
+const reload = () => {
+    location.reload();
+}
 
-var click_first= document.getElementById("mlai1");
-click_first.addEventListener("click", function (){
+var refresh_click = document.getElementById("refresh");
+refresh_click.addEventListener("click", function () {
     event.preventDefault();
-    document.getElementById("first").hidden=false
-    document.getElementById("second").hidden=true
-    document.getElementById("third").hidden=true
-},false)
+    reload();
+})
 
-var click_second= document.getElementById("stores");
-click_second.addEventListener("click", function (){
+var click_first = document.getElementById("mlai1");
+click_first.addEventListener("click", function () {
     event.preventDefault();
-    document.getElementById("first").hidden=true
-    document.getElementById("second").hidden=false
-    document.getElementById("third").hidden=true
-},false)
+    document.getElementById("first").hidden = false
+    document.getElementById("second").hidden = true
+    document.getElementById("third").hidden = true
+}, false)
 
-var click_third= document.getElementById("amen");
-click_third.addEventListener("click", function (){
+var click_second = document.getElementById("stores");
+click_second.addEventListener("click", function () {
     event.preventDefault();
-    document.getElementById("first").hidden=true
-    document.getElementById("second").hidden=true
-    document.getElementById("third").hidden=false
-},false)
+    document.getElementById("first").hidden = true
+    document.getElementById("second").hidden = false
+    document.getElementById("third").hidden = true
+}, false)
 
+var click_third = document.getElementById("amen");
+click_third.addEventListener("click", function () {
+    event.preventDefault();
+    document.getElementById("first").hidden = true
+    document.getElementById("second").hidden = true
+    document.getElementById("third").hidden = false
+}, false)
 
 
 // const seasonname = client.get("season");
@@ -50,37 +75,17 @@ click_holiday.addEventListener("click", function () {
     document.getElementById("holiday").innerHTML = isHoliday;
 });
 
-async function redis_get(key) {
-    const res = await client.get(key);
-    return res;
-}
 
-
-// const lemon = redis_get(" Lemon ");
-// var a;
-// lemon.then((res,err) => {
-//     // console.log(res)
-//     a = res;
-//     re
-// })
-// console.log(a)
-// setTimeout(() => {
-//     console.log(a)
-// }, 500)
-
-// redis_get(" Lemon ").then();
-
-var lemon=9752;
-document.getElementById("lemon").innerHTML = lemon;
-
-const strw = 8743
-document.getElementById("strw").innerHTML = strw;
-const choco = 7895
-document.getElementById("choco").innerHTML = choco;
-const vanila = 5667
-document.getElementById("vanil").innerHTML = vanila;
-const halva = 4223
-document.getElementById("halva").innerHTML = halva;
+// var lemon = 9752;
+// document.getElementById("lemon").innerHTML = lemon;
+// const strw = 8743
+// document.getElementById("strw").innerHTML = strw;
+// const choco = 7895
+// document.getElementById("choco").innerHTML = choco;
+// const vanila = 5667
+// document.getElementById("vanil").innerHTML = vanila;
+// const halva = 4223
+// document.getElementById("halva").innerHTML = halva;
 
 
 const click_graph = document.getElementById("enter");
@@ -152,32 +157,34 @@ function show_graph212() {
     });
 }
 
-var xValues = ["Halva", "Lemon", "Chocolate", "Strawberry", "Vanilla"];
-var yValues = [halva, lemon, choco, strw, vanila];
-var barColors = [
-    "#1c207e",
-    "#e3f83b",
-    "#97582b",
-    "#ef1e5d",
-    "#ffffff"
-];
+function show_main_graph(halva,lemon,choco,strw,vanila){
+    var xValues = ["Halva", "Lemon", "Chocolate", "Strawberry", "Vanilla"];
+    var yValues = [halva, lemon, choco, strw, vanila];
+    var barColors = [
+        "#1c207e",
+        "#e3f83b",
+        "#97582b",
+        "#ef1e5d",
+        "#ffffff"
+    ];
 
-new Chart("graph1", {
-    type: "pie",
-    data: {
-        labels: xValues,
-        datasets: [{
-            backgroundColor: barColors,
-            data: yValues
-        }]
-    },
-    options: {
-        title: {
-            display: true,
-            text: "גרף מלאי כללי ברשת"
+    new Chart("graph1", {
+        type: "pie",
+        data: {
+            labels: xValues,
+            datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: "גרף מלאי כללי ברשת"
+            }
         }
-    }
-});
+    });
+}
 
 var taam2 = document.getElementById("kind");
 var taam2_txt = taam2.options[taam2.selectedIndex].text;

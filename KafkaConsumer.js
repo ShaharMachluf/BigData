@@ -2,6 +2,22 @@
 
 const uuid = require("uuid");
 const Kafka = require("node-rdkafka");
+const redis = require('redis');
+const axios = require('axios');
+const REEDIS_PORT = process.env.PORT || 6379;
+const glida_flavors = [" Chocolate ", " Lemon ", " Vanilla ", " Strawberry ", " Halva "];
+const client = redis.createClient('127.0.0.1', REEDIS_PORT);
+client.connect();
+
+async function update_redis(key, value) {
+    console.log(key, value);
+    var curr= await client.hGet(key,value);
+    console.log(curr);
+    var bdika= await client.hSet(key, value, curr-1);
+    console.log(bdika);
+    return key;
+}
+
 
 const kafkaConf = {
     "group.id": "cloudkarafka-example",
@@ -33,8 +49,23 @@ consumer.on("ready", function(arg) {
 });
 
 consumer.on('data', function(data) {
-    console.log(`received message: ${data.value}`);
+    // console.log(`received message: ${data.value}`);
+    var msg=data.value.toString()
     console.log(data.value.toString());
+    var msg_split= msg.split(",");
+    // console.log(msg_split);
+    var flavs_to_reduce=[];
+    var city_to_reduce=msg_split[msg_split.length-1]
+    city_to_reduce= city_to_reduce.slice(0,city_to_reduce.length-3);
+    for (var i = 0; i < msg_split.length; i++) {
+        if (glida_flavors.includes(msg_split[i])){
+            flavs_to_reduce.push(msg_split[i].slice(0,msg_split[i].length-1));
+        }
+    }
+    console.log(flavs_to_reduce, city_to_reduce);
+    for (var j=0; j<flavs_to_reduce.length; j++){
+        update_redis(city_to_reduce,flavs_to_reduce[j]);
+    }
 });
 consumer.on("disconnected", function(arg) {
     process.exit();

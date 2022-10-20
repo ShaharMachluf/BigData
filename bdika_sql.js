@@ -5,7 +5,6 @@ const flavors = ["Chocolate", "Lemon", "Vanilla", "Strawberry", "Halva", "Chocol
 const seasons = [1, 2, 2, 2]
 const winter = [0, 1, 2, 9, 10, 11]
 const summer = [3, 4, 5, 6, 7, 8]
-const msgs=[`111`,`1222`,`333213`];
 const uuid = require("uuid");
 const Kafka = require("node-rdkafka");
 const kafkaApp = require('./kafkaApp');
@@ -66,6 +65,7 @@ function make_orders() {
     }
     let my_order = new myobject.Order(myarray, date, cities[r_city], r_scoops);
     let str = my_order.toString();
+    // var str_json= {"flav":myarray,"date":date, "city":cities[r_city],"r_scoops":r_scoops};
     console.log(str)
     kafkaApp.publish(str);
 }

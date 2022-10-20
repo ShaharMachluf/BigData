@@ -67,7 +67,7 @@ function make_orders() {
     let str = my_order.toString();
     // var str_json= {"flav":myarray,"date":date, "city":cities[r_city],"r_scoops":r_scoops};
     console.log(str)
-    kafkaApp.publish(str);
+    kafkaApp.publish(my_order);
 }
 
 

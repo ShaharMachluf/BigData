@@ -87,22 +87,59 @@
                                 <option value="תיק" id="choice3" name="choice3">לימון</option>
                                 <option value="תיק" id="choice4" name="choice4">תות</option>
                                 <option value="תיק" id="choice5" name="choice5">חלבה</option>
-
-
                             </select>
                         </div>
                     </div>
                     <div class="col-6" style="text-align: center; align-items: center">
                         <div class="input-group" style="width: 50%;">
                             <select class="form-select" id="kind2" style="direction: rtl;">
-                                <option selected>בחר חנות</option>
-                                <option value="תיק" id="choice12" name="choice1">תיק</option>
-                                <option value="תיק" id="choice22" name="choice2">תיק</option>
-                                <option value="תיק" id="choice32" name="choice3">תיק</option>
-                                <option value="תיק" id="choice42" name="choice4">תיק</option>
-                                <option value="תיק" id="choice52" name="choice5">תיק</option>
-
-
+                                <script>
+                                    var options_list = "<option value='0'>בחר חנות</option>";
+                                    var cities = [
+                                        'אבו גוש', 'אבו סנאן', 'אבו קורינאת (יישוב)',
+                                        'אבו תלול', 'אבטין', 'אבטליון',
+                                        'אביאל', 'אביבים', 'אביגדור',
+                                        'אביחיל', 'אביטל', 'אביעזר',
+                                        'אבירים', 'אבן יהודה', 'אבן מנחם',
+                                        'אבן ספיר', 'אבן שמואל', 'אבני איתן',
+                                        'אבני חפץ', 'אבנת', 'אבשלום',
+                                        'אדורה', 'אדירים', 'אדמית',
+                                        'אדרת', 'אודים', 'אודם',
+                                        'אוהד', 'אום אל-פחם', 'אום אל-קוטוף',
+                                        'אום בטין', 'אומן', 'אומץ',
+                                        'אופקים', 'אור הגנוז', 'אור הנר',
+                                        'אור יהודה', 'אור עקיבא', 'אורה',
+                                        'אורות', 'אורטל', 'אורים',
+                                        'אורנים', 'אורנית', 'אושה',
+                                        'אזור', 'אחווה', 'אחוזם',
+                                        'אחוזת ברק', 'אחיהוד', 'אחיטוב',
+                                        'אחיסמך', 'אחיעזר', 'איבים',
+                                        'אייל', 'איילת השחר', 'אילון',
+                                        'אילות', 'אילנייה', 'אילת',
+                                        'אירוס', 'איתמר', 'איתן',
+                                        'איתנים', 'אכסאל', 'אל -עזי',
+                                        'אל -עריאן', 'אל -רום', 'אל סייד',
+                                        'אלומה', 'אלומות', 'אלון הגליל',
+                                        'אלון מורה', 'אלון שבות', 'אלוני אבא',
+                                        'אלוני הבשן', 'אלוני יצחק', 'אלונים',
+                                        'אלי-עד', 'אליאב', 'אליכין',
+                                        'אליפז', 'אליפלט', 'אליקים',
+                                        'אלישיב', 'אלישמע', 'אלמגור',
+                                        'אלמוג', 'אלעד', 'אלעזר',
+                                        'אלפי מנשה', 'אלקוש', 'אלקנה',
+                                        'אמונים', 'אמירים'
+                                    ];
+                                    for (var i = 0; i < cities.length; i++) {
+                                        options_list += "<option value='0'>" + cities[i] + "</option>"
+                                    }
+                                    document.getElementById("kind2").innerHTML = options_list;
+                                </script>
+                                <!--                                <option value="0">בחר חנות</option>-->
+                                <!--                                <option value="תיק" id="choice12" name="choice1">תיק</option>-->
+                                <!--                                <option value="תיק" id="choice22" name="choice2">תיק</option>-->
+                                <!--                                <option value="תיק" id="choice32" name="choice3">תיק</option>-->
+                                <!--                                <option value="תיק" id="choice42" name="choice4">תיק</option>-->
+                                <!--                                <option value="תיק" id="choice52" name="choice5">תיק</option>-->
                             </select>
                         </div>
                     </div>
@@ -186,8 +223,49 @@
                         <div class="col-8" style="text-align: center">
                             <div class="input-group" style="width: 50%;text-align: center">
                                 <select class="form-select" id="kind23" style="direction: rtl;text-align: center">
-                                    <option selected>בחר סניף</option>
-                                    <option value="תיק" id="choice14" name="choice1">1</option>
+                                    <script>
+                                        var options_list = "<option value='0'>בחר חנות</option>";
+                                        var cities = [
+                                            'אבו גוש', 'אבו סנאן', 'אבו קורינאת (יישוב)',
+                                            'אבו תלול', 'אבטין', 'אבטליון',
+                                            'אביאל', 'אביבים', 'אביגדור',
+                                            'אביחיל', 'אביטל', 'אביעזר',
+                                            'אבירים', 'אבן יהודה', 'אבן מנחם',
+                                            'אבן ספיר', 'אבן שמואל', 'אבני איתן',
+                                            'אבני חפץ', 'אבנת', 'אבשלום',
+                                            'אדורה', 'אדירים', 'אדמית',
+                                            'אדרת', 'אודים', 'אודם',
+                                            'אוהד', 'אום אל-פחם', 'אום אל-קוטוף',
+                                            'אום בטין', 'אומן', 'אומץ',
+                                            'אופקים', 'אור הגנוז', 'אור הנר',
+                                            'אור יהודה', 'אור עקיבא', 'אורה',
+                                            'אורות', 'אורטל', 'אורים',
+                                            'אורנים', 'אורנית', 'אושה',
+                                            'אזור', 'אחווה', 'אחוזם',
+                                            'אחוזת ברק', 'אחיהוד', 'אחיטוב',
+                                            'אחיסמך', 'אחיעזר', 'איבים',
+                                            'אייל', 'איילת השחר', 'אילון',
+                                            'אילות', 'אילנייה', 'אילת',
+                                            'אירוס', 'איתמר', 'איתן',
+                                            'איתנים', 'אכסאל', 'אל -עזי',
+                                            'אל -עריאן', 'אל -רום', 'אל סייד',
+                                            'אלומה', 'אלומות', 'אלון הגליל',
+                                            'אלון מורה', 'אלון שבות', 'אלוני אבא',
+                                            'אלוני הבשן', 'אלוני יצחק', 'אלונים',
+                                            'אלי-עד', 'אליאב', 'אליכין',
+                                            'אליפז', 'אליפלט', 'אליקים',
+                                            'אלישיב', 'אלישמע', 'אלמגור',
+                                            'אלמוג', 'אלעד', 'אלעזר',
+                                            'אלפי מנשה', 'אלקוש', 'אלקנה',
+                                            'אמונים', 'אמירים'
+                                        ];
+                                        for (var i = 0; i < cities.length; i++) {
+                                            options_list += "<option value='0'>" + cities[i] + "</option>"
+                                        }
+                                        document.getElementById("kind23").innerHTML = options_list;
+                                    </script>
+                                    <!--                                    <option selected>בחר סניף</option>-->
+<!--                                    <option value="תיק" id="choice14" name="choice1">1</option>-->
                                     <!--                                    <option value="תיק" id="choice24" name="choice2">2</option>-->
                                     <!--                                    <option value="תיק" id="choice345" name="choice3">3</option>-->
                                     <!--                                    <option value="תיק" id="choice44" name="choice4">4</option>-->

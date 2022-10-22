@@ -1,17 +1,20 @@
 const redis = require('redis');
+// const sql_cities= require('./sql_city');
 import {io} from "socket.io-client";
 
+// var RedisApp = require('./sql_city');
 const REEDIS_PORT = process.env.PORT || 6379;
 
 const client = redis.createClient('127.0.0.1', REEDIS_PORT);
 
 client.connect();
-// var RedisApp= require('./stam_redis')
+// var cities=sql_cities.cit;
+// console.log(cities);
 const socket = io("http://localhost:3000");
 socket.on('connection');
 socket.on("data", async (msg) => {
     console.log("Ciiii\n" + msg);
-    const msg_obj= (JSON.parse(msg))
+    const msg_obj = (JSON.parse(msg))
     const lemon = msg_obj.lemon;
     document.getElementById("lemon").innerHTML = lemon;
     const strw = msg_obj.strw
@@ -22,8 +25,29 @@ socket.on("data", async (msg) => {
     document.getElementById("vanil").innerHTML = vanila;
     const halva = msg_obj.halva
     document.getElementById("halva").innerHTML = halva;
-    if (document.getElementById("first").hidden==false){
-        show_main_graph(halva,lemon,choco,strw,vanila)
+    if (document.getElementById("first").hidden == false) {
+        show_main_graph(halva, lemon, choco, strw, vanila)
+    }
+});
+
+socket.on("data2", async (msg) => {
+    console.log("Ciiii\n" + msg);
+    const msg_obj = (JSON.parse(msg))
+    var taam2 = document.getElementById("kind");
+    var taam2_txt = taam2.options[taam2.selectedIndex].text;
+
+    var snif2 = document.getElementById("kind2");
+    var snif2_txt = snif2.options[snif2.selectedIndex].text;
+
+    const lemon2= msg_obj[snif2_txt]["Lemon"];
+    const strw2= msg_obj[snif2_txt]["Strawberry"];
+    const halva2= msg_obj[snif2_txt]["Halva"];
+    const choco2= msg_obj[snif2_txt]["Chocolate"];
+    const vanil2= msg_obj[snif2_txt]["Vanilla"];
+    const click_graph = document.getElementById("enter");
+    click_graph.addEventListener("click", show_graph213);
+    if (document.getElementById("second").hidden == false) {
+        show_graph213(halva2,lemon2,choco2,strw2,vanil2)
     }
 });
 
@@ -75,26 +99,13 @@ click_holiday.addEventListener("click", function () {
     document.getElementById("holiday").innerHTML = isHoliday;
 });
 
+// const click_graph = document.getElementById("enter");
+// click_graph.addEventListener("click", show_graph213
+// );
 
-// var lemon = 9752;
-// document.getElementById("lemon").innerHTML = lemon;
-// const strw = 8743
-// document.getElementById("strw").innerHTML = strw;
-// const choco = 7895
-// document.getElementById("choco").innerHTML = choco;
-// const vanila = 5667
-// document.getElementById("vanil").innerHTML = vanila;
-// const halva = 4223
-// document.getElementById("halva").innerHTML = halva;
-
-
-const click_graph = document.getElementById("enter");
-click_graph.addEventListener("click", show_graph213
-);
-
-function show_graph213() {
+function show_graph213(halva2,lemon2,choco2,strw2,vanil2) {
     show_graph21();
-    show_graph212();
+    show_graph212(halva2,lemon2,choco2,strw2,vanil2);
 }
 
 function show_graph21() {
@@ -127,9 +138,11 @@ function show_graph21() {
     });
 }
 
-function show_graph212() {
+function show_graph212(amount_h,amount_l,amount_c,amount_s,amount_v) {
+
+    console.log(amount_l + "lemonnnnn");
     var xValues = ["Halva", "Lemon", "Chocolate", "Strawberry", "Vanilla"];
-    var yValues = [55, 49, 72, 14, 33];
+    var yValues = [amount_h, amount_l, amount_c, amount_s, amount_v];
     var barColors = [
         "#1c207e",
         "#e3f83b",
@@ -157,7 +170,7 @@ function show_graph212() {
     });
 }
 
-function show_main_graph(halva,lemon,choco,strw,vanila){
+function show_main_graph(halva, lemon, choco, strw, vanila) {
     var xValues = ["Halva", "Lemon", "Chocolate", "Strawberry", "Vanilla"];
     var yValues = [halva, lemon, choco, strw, vanila];
     var barColors = [
@@ -186,11 +199,12 @@ function show_main_graph(halva,lemon,choco,strw,vanila){
     });
 }
 
-var taam2 = document.getElementById("kind");
-var taam2_txt = taam2.options[taam2.selectedIndex].text;
+// var taam2 = document.getElementById("kind");
+// var taam2_txt = taam2.options[taam2.selectedIndex].text;
+//
+// var snif2 = document.getElementById("kind2");
+// var snif2_txt = snif2.options[snif2.selectedIndex].text;
 
-var snif2 = document.getElementById("kind2");
-var snif2_txt = snif2.options[snif2.selectedIndex].text;
 
 var date_value = document.getElementById("date").value;
 // document.getElementById("ddate").innerHTML = date_value;

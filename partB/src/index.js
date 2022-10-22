@@ -30,26 +30,42 @@ socket.on("data", async (msg) => {
     }
 });
 
-socket.on("data2", async (msg) => {
-    console.log("Ciiii\n" + msg);
-    const msg_obj = (JSON.parse(msg))
-    var taam2 = document.getElementById("kind");
-    var taam2_txt = taam2.options[taam2.selectedIndex].text;
 
+// var taam2 = document.getElementById("kind");
+// var taam2_txt = taam2.options[taam2.selectedIndex].text;
+//
+// var snif2 = document.getElementById("kind2");
+// var snif2_txt = snif2.options[snif2.selectedIndex].text;
+const click_graph = document.getElementById("enter");
+click_graph.addEventListener("click", emit_graph);
+
+function emit_graph() {
     var snif2 = document.getElementById("kind2");
     var snif2_txt = snif2.options[snif2.selectedIndex].text;
+    socket.emit("graph", snif2_txt);
+}
 
-    const lemon2= msg_obj[snif2_txt]["Lemon"];
-    const strw2= msg_obj[snif2_txt]["Strawberry"];
-    const halva2= msg_obj[snif2_txt]["Halva"];
-    const choco2= msg_obj[snif2_txt]["Chocolate"];
-    const vanil2= msg_obj[snif2_txt]["Vanilla"];
-    const click_graph = document.getElementById("enter");
-    click_graph.addEventListener("click", show_graph213);
-    if (document.getElementById("second").hidden == false) {
-        show_graph213(halva2,lemon2,choco2,strw2,vanil2)
-    }
+socket.on("data2", async function (msg) {
+    const msg_obj = (JSON.parse(msg));
+    console.log(msg);
+    const lemon2 = msg_obj["lemon"];
+    const strw2 = msg_obj["strw"];
+    const halva2 = msg_obj["halva"];
+    const choco2 = msg_obj["choco"];
+    const vanil2 = msg_obj["vanil"];
+    show_graph213(halva2, lemon2, choco2, strw2, vanil2);
 });
+// const lemon2= msg_obj[snif2_txt]["Lemon"];
+// const strw2= msg_obj[snif2_txt]["Strawberry"];
+// const halva2= msg_obj[snif2_txt]["Halva"];
+// const choco2= msg_obj[snif2_txt]["Chocolate"];
+// const vanil2= msg_obj[snif2_txt]["Vanilla"];
+// const click_graph = document.getElementById("enter");
+// click_graph.addEventListener("click", show_graph213);
+// if (document.getElementById("second").hidden == false) {
+//     show_graph213(halva2, lemon2, choco2, strw2, vanil2)
+// }
+
 
 const reload = () => {
     location.reload();
@@ -103,9 +119,9 @@ click_holiday.addEventListener("click", function () {
 // click_graph.addEventListener("click", show_graph213
 // );
 
-function show_graph213(halva2,lemon2,choco2,strw2,vanil2) {
+function show_graph213(halva2, lemon2, choco2, strw2, vanil2) {
     show_graph21();
-    show_graph212(halva2,lemon2,choco2,strw2,vanil2);
+    show_graph212(halva2, lemon2, choco2, strw2, vanil2);
 }
 
 function show_graph21() {
@@ -138,9 +154,7 @@ function show_graph21() {
     });
 }
 
-function show_graph212(amount_h,amount_l,amount_c,amount_s,amount_v) {
-
-    console.log(amount_l + "lemonnnnn");
+function show_graph212(amount_h, amount_l, amount_c, amount_s, amount_v) {
     var xValues = ["Halva", "Lemon", "Chocolate", "Strawberry", "Vanilla"];
     var yValues = [amount_h, amount_l, amount_c, amount_s, amount_v];
     var barColors = [
@@ -165,6 +179,9 @@ function show_graph212(amount_h,amount_l,amount_c,amount_s,amount_v) {
             title: {
                 display: true,
                 text: "מלאי נוכחי בסניף נבחר"
+            },
+            scales: {
+                yAxes: [{ticks: {min: 0, max: 100}}],
             }
         }
     });

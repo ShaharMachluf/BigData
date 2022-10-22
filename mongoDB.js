@@ -44,6 +44,7 @@ module.exports.run_mongo = async function run(m) {
         let weath = weather.find(o => o.time_obs.slice(0, 10) === m.date.slice(0,10));
         console.log(m.date);
         var hol = holliday(m.date);
+        console.log(hol+"CCCCIIIIIIIIIIiiii");
         var we;
         try{
             we= weath.tmp_air_dry

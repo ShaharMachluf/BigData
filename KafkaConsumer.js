@@ -47,13 +47,22 @@ consumer.on("ready", function (arg) {
 
 io.on("connection", async (socket) => {
 
-    const d= await kaf_con.getDate();
-    const d2= await kaf_con.dataBySnif();
+    const d = await kaf_con.getDate();
+    // const d2= await kaf_con.dataBySnif();
     console.log(d);
-    socket.emit("data",d);
-    socket.emit("data2",d2);
-
+    socket.emit("data", d);
+    // socket.emit("data2",d2);
+    socket.on("graph", async (city) => {
+        const d2 = await kaf_con.dataBySnif(city);
+        // const d2 = 10;
+        console.log(d2);
+        socket.emit("data2", d2);
+    });
 });
+// io.on("graph",async (socket)=>{
+//     const d2= await kaf_con.dataBySnif();
+//     socket.emit("data2",d2);
+// });
 
 consumer.on('data', async function (data) {
 

@@ -5,6 +5,7 @@ const Kafka = require("node-rdkafka");
 const redis = require('redis');
 const axios = require('axios');
 const kaf_con = require('./stam_redis');
+const mongo_con= require('./mongoDB');
 const io = require("socket.io")(3000, {
     cors:{
         origin: ["http://localhost:1234"]
@@ -47,8 +48,11 @@ consumer.on("ready", function (arg) {
 io.on("connection", async (socket) => {
 
     const d= await kaf_con.getDate();
+    const d2= await kaf_con.dataBySnif();
     console.log(d);
     socket.emit("data",d);
+    socket.emit("data2",d2);
+
 });
 
 consumer.on('data', async function (data) {
@@ -56,6 +60,7 @@ consumer.on('data', async function (data) {
     const msg = JSON.parse(data.value);
     console.log(`received message: ${JSON.stringify(msg)}`);
     await kaf_con.ParseDate(msg);
+    await mongo_con.run_mongo(msg).catch(console.dir);
     // io.on("connection", (socket) => {
     //     socket.emit("data", data);
     // });

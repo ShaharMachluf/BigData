@@ -1,13 +1,13 @@
 // https://www.cloudkarafka.com/ הפעלת קפקא במסגרת ספק זה
-
+const model_t = require('./ModelTraining');
 const uuid = require("uuid");
 const Kafka = require("node-rdkafka");
 const redis = require('redis');
 const axios = require('axios');
 const kaf_con = require('./stam_redis');
-const mongo_con= require('./mongoDB');
+const mongo_con = require('./mongoDB');
 const io = require("socket.io")(3000, {
-    cors:{
+    cors: {
         origin: ["http://localhost:1234"]
     }
 });
@@ -16,6 +16,14 @@ const glida_flavors = [" Chocolate ", " Lemon ", " Vanilla ", " Strawberry ", " 
 const client = redis.createClient('127.0.0.1', REEDIS_PORT);
 client.connect();
 
+
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+}
 
 const kafkaConf = {
     "group.id": "cloudkarafka-example",
@@ -46,7 +54,6 @@ consumer.on("ready", function (arg) {
 });
 
 io.on("connection", async (socket) => {
-
     const d = await kaf_con.getDate();
     // const d2= await kaf_con.dataBySnif();
     console.log(d);
@@ -57,6 +64,18 @@ io.on("connection", async (socket) => {
         // const d2 = 10;
         console.log(d2);
         socket.emit("data2", d2);
+    });
+    socket.on("model", async (msg) => {
+        console.log(msg);
+        await model_t.trainM();
+    });
+
+    socket.on("predict",  async(data) => {
+        console.log(data);
+        sleep(30000);
+        var predict_info = await model_t.Predict(data);
+        console.log(predict_info+ "shirazi");
+        socket.emit("pred_info", predict_info);
     });
 });
 // io.on("graph",async (socket)=>{

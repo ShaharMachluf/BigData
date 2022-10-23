@@ -2,7 +2,7 @@ const {MongoClient} = require("mongodb");
 var mysql = require('mysql');
 var bigml = require('bigml');
 var fs = require('fs');
-const mongo_con= require('./mongoDB');
+const mongo_con = require('./mongoDB');
 const {RowDataPacket} = require("mysql/lib/protocol/packets");
 
 var cities = {};
@@ -15,24 +15,23 @@ var curr_model;
 let result;
 
 const setOutput = async (rows) => {
-    try{
-        if(fs.existsSync("model.csv")){
+    try {
+        if (fs.existsSync("model.csv")) {
             fs.unlinkSync("model.csv");
         }
-    }
-    catch (e){
+    } catch (e) {
         console.error(e);
     }
     var csv = "day,month,season,holliday,weather,size,religion,todller,teen,adult,middle,gold,old,flavor,amount\r\n";
     await fs.appendFile("model.csv", csv, (err) => {
         if (err) {
             console.log(err);
-        }else{
+        } else {
             console.log("success");
         }
     });
     result = rows;
-    for(var i=0; i<result.length;i++){
+    for (var i = 0; i < result.length; i++) {
         cities[result[i].name] = result[i];
     }
 
@@ -56,10 +55,9 @@ const setOutput = async (rows) => {
                     var season = "spring";
                 }
                 var holliday;//holliday
-                if(info[date]["holliday"]){
+                if (info[date]["holliday"]) {
                     holliday = "true";
-                }
-                else {
+                } else {
                     holliday = "false";
                 }
                 var weather = info[date]["weather"];//weather
@@ -149,7 +147,9 @@ async function CreateCSV() {
 }
 
 //when the "train model" button is pressed this is the function that it triggers
-async function TrainModel() {
+module.exports.trainM =
+    async function TrainModel() {
+    console.log("Ciiiii");
     await CreateCSV();
     var source = new bigml.Source(connection);
     source.create('./model.csv', function (error, sourceInfo) {
@@ -172,7 +172,9 @@ async function TrainModel() {
 
 //given data predicts the amount
 //param data: {date, branch, flavor}
-function PredictAmount(data) {
+module.exports.Predict =
+    function PredictAmount(data) {
+        console.log("kkkkko")
     const datetime = new Date(data.date);
     var day = datetime.getDay();//day
     var month = datetime.getMonth();//month
@@ -186,12 +188,11 @@ function PredictAmount(data) {
     } else {
         var season = "spring";
     }
-    holly=mongo_con.holly(data.date);//holliday
-    if(holly){
-        holliday = "true";
-    }
-    else {
-        holliday = "false";
+    var holly = mongo_con.holly(data.date);//holliday
+    if (holly) {
+        var holliday = "true";
+    } else {
+        var holliday = "false";
     }
     var size = cities[data.branch].size;
     var religion = cities[data.branch].religion;
@@ -202,20 +203,67 @@ function PredictAmount(data) {
     var gold = (cities[data.branch]["ages_56-64"] == null) ? ((1 / 6) * 100) : ((cities[data.branch]["ages_56-64"] / size) * 100);
     var old = (cities[data.branch]["ages_65-inf"] == null) ? ((1 / 6) * 100) : ((cities[data.branch]["ages_65-inf"] / size) * 100);
     var prediction = new bigml.Prediction(connection);
-    prediction.create(curr_model, {'day':day,'month':month,'season':season,'holliday':holliday,'size':size,'religion':religion,'todller':todller,'teen':teen,'adult':adult,'middle':middle,'gold':gold,'old':old,'flavor':data.flavor}, function (error, predictInfo) {
+    console.log("po")
+    prediction.create(curr_model, {
+        'day': day,
+        'month': month,
+        'season': season,
+        'holliday': holliday,
+        'size': size,
+        'religion': religion,
+        'todller': todller,
+        'teen': teen,
+        'adult': adult,
+        'middle': middle,
+        'gold': gold,
+        'old': old,
+        'flavor': data.flavor
+
+    }, function (error, predictInfo) {
+        console.log("looo")
         if (!error && predictInfo) {
             console.log(predictInfo.object.output);
+            console.log(predictInfo);
+            console.log("here your ans:")
+            // var days = {
+            //     1: "Sunday",
+            //     2: "Monday",
+            //     3: "Tuesday",
+            //     4: "Wednesday",
+            //     5: "Thursday",
+            //     6: "Friday",
+            //     7: "Saturday"
+            // };
+            // var monthNames = {
+            //     1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
+            //     7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"
+            // };
+            // var hol;
+            // var holidays = predictInfo.input_data.holiday;
+            // if (holidays===true){
+            //     hol=" YES "
+            // }
+            // else{
+            //     hol=" NO "
+            // }
+            // var day = "Day: " + days[predictInfo.input_data.day];
+            // var month = " Month: " + monthNames[predictInfo.input_data.month]
+            // var str1 = day + month + " Season: " + predictInfo.input_data.season + " Holiday: " + hol + " Population size: " + predictInfo.input_data.size + " Population Type: " + predictInfo.input_data.religion;
+            // var str2 = " Teens: " + predictInfo.input_data.teen + " toddlers: " + predictInfo.input_data.todller + " Middle: " + predictInfo.input_data.middle + " Adults: " + predictInfo.input_data.adult;
+            // var str3 = " Old: " + predictInfo.input_data.old + " Gold: " + predictInfo.input_data.gold;
+            // var big_str = str1 + str2 + str3;
+            // console.log(big_str);
             return predictInfo;
-        }else if(error){
+        } else if (error) {
             console.error(error);
         }
     });
 }
 
 
-async function main(){
-    TrainModel();
-    setTimeout(PredictAmount.bind(null,{date:"2023-10-12",branch:'אורות',flavor:"Chocolate"}), 30000)
-}
+// async function main(){
+//     TrainModel();
+//     setTimeout(PredictAmount.bind(null,{date:"2023-10-12",branch:'אורות',flavor:"Chocolate"}), 30000)
+// }
 
-main();
+// main();

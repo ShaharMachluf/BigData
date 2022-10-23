@@ -1,15 +1,12 @@
 const redis = require('redis');
-// const sql_cities= require('./sql_city');
+
 import {io} from "socket.io-client";
 
-// var RedisApp = require('./sql_city');
 const REEDIS_PORT = process.env.PORT || 6379;
 
 const client = redis.createClient('127.0.0.1', REEDIS_PORT);
 
 client.connect();
-// var cities=sql_cities.cit;
-// console.log(cities);
 const socket = io("http://localhost:3000");
 socket.on('connection');
 socket.on("data", async (msg) => {
@@ -31,18 +28,56 @@ socket.on("data", async (msg) => {
 });
 
 
-// var taam2 = document.getElementById("kind");
-// var taam2_txt = taam2.options[taam2.selectedIndex].text;
-//
-// var snif2 = document.getElementById("kind2");
-// var snif2_txt = snif2.options[snif2.selectedIndex].text;
 const click_graph = document.getElementById("enter");
 click_graph.addEventListener("click", emit_graph);
+
+
+const train_m = document.getElementById("enter3");
+train_m.addEventListener("click", emit_model);
+
+const train_m2 = document.getElementById("enter4");
+train_m2.addEventListener("click", emit_predict);
 
 function emit_graph() {
     var snif2 = document.getElementById("kind2");
     var snif2_txt = snif2.options[snif2.selectedIndex].text;
     socket.emit("graph", snif2_txt);
+}
+
+
+function emit_model() {
+    console.log("func model emit")
+    socket.emit("model", "train model");
+}
+
+function emit_predict() {
+    console.log("im here")
+    var snif3 = document.getElementById("kind23");
+    var snif3_txt = snif3.options[snif3.selectedIndex].text;
+
+    var taam3 = document.getElementById("kind1");
+    var taam3_txt = taam3.options[taam3.selectedIndex].text;
+
+    var date_value = document.getElementById("date").value;
+    console.log(date_value);
+    var english_taam;
+    if (taam3_txt === "וניל") {
+        english_taam = "Vanilla";
+    }
+    if (taam3_txt === "שוקולד") {
+        english_taam = "Chocolate";
+    }
+    if (taam3_txt === "לימון") {
+        english_taam = "Lemon";
+    }
+    if (taam3_txt === "חלבה") {
+        english_taam = "Halva";
+    }
+    if (taam3_txt === "תות") {
+        english_taam = "Strawberry";
+    }
+    var send_to_predict = {"date": date_value, "branch": snif3_txt, "flavor": english_taam};
+    socket.emit("predict", send_to_predict);
 }
 
 socket.on("data2", async function (msg) {
@@ -55,16 +90,12 @@ socket.on("data2", async function (msg) {
     const vanil2 = msg_obj["vanil"];
     show_graph213(halva2, lemon2, choco2, strw2, vanil2);
 });
-// const lemon2= msg_obj[snif2_txt]["Lemon"];
-// const strw2= msg_obj[snif2_txt]["Strawberry"];
-// const halva2= msg_obj[snif2_txt]["Halva"];
-// const choco2= msg_obj[snif2_txt]["Chocolate"];
-// const vanil2= msg_obj[snif2_txt]["Vanilla"];
-// const click_graph = document.getElementById("enter");
-// click_graph.addEventListener("click", show_graph213);
-// if (document.getElementById("second").hidden == false) {
-//     show_graph213(halva2, lemon2, choco2, strw2, vanil2)
-// }
+
+socket.on("pred_info", async function (data) {
+    console.log(data);
+    // var data_parse= JSON.parse(data);
+    document.getElementById("p_data").innerHTML = data;
+});
 
 
 const reload = () => {

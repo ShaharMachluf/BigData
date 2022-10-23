@@ -9,16 +9,9 @@ var cities = {};
 var info = {};//will be built like this: {date:brach:flavor:amount} (dict inside dict inside dict)
 var connection = new bigml.BigML('SHAHAR6261',
     '68f6776d831d3a4c3aed814e2ef8e329fc0c9ab8');
-
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
-
-
+const uri =
+    "mongodb://shahar:1234@ac-ylzmvv4-shard-00-00.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-01.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-02.fffofzc.mongodb.net:27017/?ssl=true&replicaSet=atlas-22nd2n-shard-0&authSource=admin&retryWrites=true&w=majority\n";
+var curr_model;
 let result;
 
 const setOutput = async (rows) => {
@@ -94,12 +87,6 @@ const setOutput = async (rows) => {
     }
 }
 
-const uri =
-    "mongodb://shahar:1234@ac-ylzmvv4-shard-00-00.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-01.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-02.fffofzc.mongodb.net:27017/?ssl=true&replicaSet=atlas-22nd2n-shard-0&authSource=admin&retryWrites=true&w=majority\n";
-// const client = new MongoClient(uri);
-
-var curr_model;
-
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -108,9 +95,6 @@ var con = mysql.createConnection({
 });
 
 function add_order(doc) {
-    // console.log(doc);
-    // console.log(doc.flavor);
-    // console.log(doc.flavor.length);
     for (var i = 0; i < doc.flavor.length; i++) {//count flavors
         if (doc.date in info) {
             if (doc.branch in info[doc.date]) {
@@ -156,7 +140,6 @@ async function CreateCSV() {
 
         con.query("SELECT * FROM Cities", function (err, out, fields) {
             if (err) throw err;
-            //     // console.log(result[0].size);
             setOutput(out);
         })
 
@@ -167,11 +150,8 @@ async function CreateCSV() {
 
 //when the "train model" button is pressed this is the function that it triggers
 async function TrainModel() {
-    console.log("fsf")
     await CreateCSV();
-    console.log("sdfewtwrt")
     var source = new bigml.Source(connection);
-    console.log("om here!!!")
     source.create('./model.csv', function (error, sourceInfo) {
         if (!error && sourceInfo) {
             var dataset = new bigml.Dataset(connection);
@@ -181,7 +161,6 @@ async function TrainModel() {
                     model.create(datasetInfo, function (error, modelInfo) {
                         if (!error && modelInfo) {
                             curr_model = modelInfo;
-                            console.log("curr_model" + curr_model)
                             return curr_model;
                         }
                     });
@@ -194,7 +173,6 @@ async function TrainModel() {
 //given data predicts the amount
 //param data: {date, branch, flavor}
 function PredictAmount(data) {
-    console.log(data.branch);
     const datetime = new Date(data.date);
     var day = datetime.getDay();//day
     var month = datetime.getMonth();//month

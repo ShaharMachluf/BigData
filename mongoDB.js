@@ -2,7 +2,7 @@ const {MongoClient} = require("mongodb");
 const uuid = require("uuid");
 const Kafka = require("node-rdkafka");
 var data = require('./weather.json');
-var axios = require("axios");
+var axios = require("axios").default;
 var https = require("https");
 
 const uri =
@@ -12,24 +12,17 @@ const uri =
 var weather = data;
 
 //check if there is a holliday at "date"
-function holliday(date) {
-    axios({
-        method: 'get',
-        url: `https://www.hebcal.com/converter?cfg=json&date=${date}&g2h=1&strict=1`,
-        responseType: 'json',
-        timeout: 60000,
-        httpsAgent: new https.Agent({ keepAlive: true })
-
-    })
-        .then(function (response) {
-            var obj = response.data;
-            console.log(obj.events);
-            if (obj.events.length > 1) {
-                return true;
-            }
-            return false;
-        });
+module.exports.holly = async function holliday(date){
+    try {
+        const resp = await axios.get(`https://www.hebcal.com/converter?cfg=json&date=${date}&g2h=1&strict=1`);
+        var obj = resp.data;
+        return (obj.events.length>1);
+    } catch (err) {
+        // Handle Error Here
+        console.error(err);
+    }
 }
+
 
 module.exports.run_mongo = async function run(m) {
     const client = new MongoClient(uri);
@@ -43,7 +36,7 @@ module.exports.run_mongo = async function run(m) {
 
         let weath = weather.find(o => o.time_obs.slice(0, 10) === m.date.slice(0,10));
         console.log(m.date);
-        var hol = holliday(m.date);
+        var hol = await holliday(m.date);
         console.log(hol+"CCCCIIIIIIIIIIiiii");
         var we;
         try{

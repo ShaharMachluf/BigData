@@ -4,6 +4,19 @@ var bigml = require('bigml');
 var fs = require('fs');
 const mongo_con = require('./mongoDB');
 const {RowDataPacket} = require("mysql/lib/protocol/packets");
+// fs = require('fs');
+// const kafkaApp = require('./kafkaApp');
+// import {io} from "socket.io-client";
+
+
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+}
+
 
 var cities = {};
 var info = {};//will be built like this: {date:brach:flavor:amount} (dict inside dict inside dict)
@@ -13,6 +26,13 @@ const uri =
     "mongodb://shahar:1234@ac-ylzmvv4-shard-00-00.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-01.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-02.fffofzc.mongodb.net:27017/?ssl=true&replicaSet=atlas-22nd2n-shard-0&authSource=admin&retryWrites=true&w=majority\n";
 var curr_model;
 let result;
+var val;
+
+function setVal(value) {
+    val = value;
+    console.log(val);
+}
+
 
 const setOutput = async (rows) => {
     try {
@@ -148,7 +168,7 @@ async function CreateCSV() {
 
 //when the "train model" button is pressed this is the function that it triggers
 module.exports.trainM =
-    async function TrainModel() {
+async function TrainModel() {
     console.log("Ciiiii");
     await CreateCSV();
     var source = new bigml.Source(connection);
@@ -173,8 +193,8 @@ module.exports.trainM =
 //given data predicts the amount
 //param data: {date, branch, flavor}
 module.exports.Predict =
-    function PredictAmount(data) {
-        console.log("kkkkko")
+function PredictAmount(data) {
+    console.log("kkkkko")
     const datetime = new Date(data.date);
     var day = datetime.getDay();//day
     var month = datetime.getMonth();//month
@@ -225,6 +245,40 @@ module.exports.Predict =
             console.log(predictInfo.object.output);
             console.log(predictInfo);
             console.log("here your ans:")
+
+            var days = {
+                1: "Sunday",
+                2: "Monday",
+                3: "Tuesday",
+                4: "Wednesday",
+                5: "Thursday",
+                6: "Friday",
+                7: "Saturday"
+            };
+            var monthNames = {
+                1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
+                7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"
+            };
+            var hol;
+            var holidays =
+                predictInfo.object.input_data.holliday;
+            if (holidays===true){
+                hol=" YES "
+            }
+            else{
+                hol=" NO "
+            }
+            var day = "Day: " + days[predictInfo.object.input_data.day];
+            var month = ", Month: " + monthNames[predictInfo.object.input_data.month]
+            var str1 = day + month + ", Season: " + predictInfo.object.input_data.season + ", Holiday: " + hol + ", Population size: " + predictInfo.object.input_data.size + ", Population Type: " + predictInfo.object.input_data.religion;
+            var str2 = ", Teens: " + predictInfo.object.input_data.teen + ", toddlers: " + predictInfo.object.input_data.todller + ", Middle: " + predictInfo.object.input_data.middle + ", Adults: " + predictInfo.object.input_data.adult;
+            var str3 = ", Old: " + predictInfo.object.input_data.old + ", Gold: " + predictInfo.object.input_data.gold;
+            var big_str = str1 + str2 + str3+ ", Prediction: "+predictInfo.object.output;
+            fs.writeFile('prediction.txt', JSON.stringify(big_str), function (err) {
+                if (err) return console.log(err);
+                console.log("Ciii of txt");
+            });
+            // setVal(predictInfo);
             // var days = {
             //     1: "Sunday",
             //     2: "Monday",
@@ -254,6 +308,7 @@ module.exports.Predict =
             // var big_str = str1 + str2 + str3;
             // console.log(big_str);
             return predictInfo;
+            // console.log("lama");
         } else if (error) {
             console.error(error);
         }
@@ -261,9 +316,13 @@ module.exports.Predict =
 }
 
 
-// async function main(){
+// module.exports.main=
+// async function main() {
 //     TrainModel();
-//     setTimeout(PredictAmount.bind(null,{date:"2023-10-12",branch:'אורות',flavor:"Chocolate"}), 30000)
+//     setTimeout(PredictAmount, 30000, {date: "2023-10-12", branch: 'אורות', flavor: "Chocolate"});
+//     setTimeout(console.log,30000,val);
+//     // sleep(60000);
+//     // PredictAmount({date: "2023-10-12", branch: 'אורות', flavor: "Chocolate"})
 // }
-
+// //
 // main();

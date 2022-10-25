@@ -6,6 +6,8 @@ const redis = require('redis');
 const axios = require('axios');
 const kaf_con = require('./stam_redis');
 const mongo_con = require('./mongoDB');
+// const {readFileSync, promises: fsPromises} = require('fs');
+const fs = require('fs');
 const io = require("socket.io")(3000, {
     cors: {
         origin: ["http://localhost:1234"]
@@ -72,10 +74,17 @@ io.on("connection", async (socket) => {
 
     socket.on("predict",  async(data) => {
         console.log(data);
-        sleep(30000);
-        var predict_info = await model_t.Predict(data);
-        console.log(predict_info+ "shirazi");
-        socket.emit("pred_info", predict_info);
+        // sleep(30000);
+        await model_t.Predict(data);
+        fs.readFile("./prediction.txt", 'utf8', (err, result) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            console.log(result+ "blalalallaaa");
+            socket.emit("pred_info", result);
+
+        });
     });
 });
 // io.on("graph",async (socket)=>{
@@ -84,7 +93,9 @@ io.on("connection", async (socket) => {
 // });
 
 consumer.on('data', async function (data) {
+    if (! "flavor"  in data  ){
 
+    }
     const msg = JSON.parse(data.value);
     console.log(`received message: ${JSON.stringify(msg)}`);
     await kaf_con.ParseDate(msg);

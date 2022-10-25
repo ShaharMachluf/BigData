@@ -1,4 +1,7 @@
 const redis = require('redis');
+const {readFileSync, promises: fsPromises} = require('fs');
+const fs = require('fs');
+
 
 import {io} from "socket.io-client";
 
@@ -77,6 +80,7 @@ function emit_predict() {
         english_taam = "Strawberry";
     }
     var send_to_predict = {"date": date_value, "branch": snif3_txt, "flavor": english_taam};
+    console.log("pred.. go..")
     socket.emit("predict", send_to_predict);
 }
 
@@ -91,10 +95,13 @@ socket.on("data2", async function (msg) {
     show_graph213(halva2, lemon2, choco2, strw2, vanil2);
 });
 
+
 socket.on("pred_info", async function (data) {
     console.log(data);
     // var data_parse= JSON.parse(data);
+    // const result = fs.readFileSync('./prediction.txt', {encoding: 'utf-8'});
     document.getElementById("p_data").innerHTML = data;
+
 });
 
 

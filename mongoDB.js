@@ -26,18 +26,14 @@ module.exports.holly = async function holliday(date){
 
 module.exports.run_mongo = async function run(m) {
     const client = new MongoClient(uri);
-    // await client.connect();
     try {
         //connect to db
         const database = client.db('ice-cream');
         const orders = database.collection('orders');
         var doc = {};
-        console.log(m + "shahar");
 
         let weath = weather.find(o => o.time_obs.slice(0, 10) === m.date.slice(0,10));
-        console.log(m.date);
         var hol = await holliday(m.date);
-        console.log(hol+"CCCCIIIIIIIIIIiiii");
         var we;
         try{
             we= weath.tmp_air_dry
@@ -52,7 +48,7 @@ module.exports.run_mongo = async function run(m) {
             holiday: hol,
             num_scoops: m.num_scoops,
             flavor: m.flavor
-        };//insert details
+        };
         //insert document
         const result = await orders.insertOne(doc);
         console.log(`A document was inserted with the _id: ${result.insertedId}`);
@@ -61,5 +57,3 @@ module.exports.run_mongo = async function run(m) {
         await client.close();
     }
 }
-//put it in while true (?)
-// run().catch(console.dir);

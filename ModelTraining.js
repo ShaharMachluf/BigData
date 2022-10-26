@@ -4,19 +4,6 @@ var bigml = require('bigml');
 var fs = require('fs');
 const mongo_con = require('./mongoDB');
 const {RowDataPacket} = require("mysql/lib/protocol/packets");
-// fs = require('fs');
-// const kafkaApp = require('./kafkaApp');
-// import {io} from "socket.io-client";
-
-
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
-
 
 var cities = {};
 var info = {};//will be built like this: {date:brach:flavor:amount} (dict inside dict inside dict)
@@ -26,22 +13,17 @@ const uri =
     "mongodb://shahar:1234@ac-ylzmvv4-shard-00-00.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-01.fffofzc.mongodb.net:27017,ac-ylzmvv4-shard-00-02.fffofzc.mongodb.net:27017/?ssl=true&replicaSet=atlas-22nd2n-shard-0&authSource=admin&retryWrites=true&w=majority\n";
 var curr_model;
 let result;
-var val;
 
-function setVal(value) {
-    val = value;
-    console.log(val);
-}
-
-
+//use the output from the sql query and the object "info" to create the csv
 const setOutput = async (rows) => {
-    try {
+    try {//if the file exist, delete it and create a new one
         if (fs.existsSync("model.csv")) {
             fs.unlinkSync("model.csv");
         }
     } catch (e) {
         console.error(e);
     }
+    //fields
     var csv = "day,month,season,holliday,weather,size,religion,todller,teen,adult,middle,gold,old,flavor,amount\r\n";
     await fs.appendFile("model.csv", csv, (err) => {
         if (err) {
@@ -51,10 +33,12 @@ const setOutput = async (rows) => {
         }
     });
     result = rows;
+    //create an array that contains all the cities
     for (var i = 0; i < result.length; i++) {
         cities[result[i].name] = result[i];
     }
 
+    //create a line and append it to the csv for each date, branch and flavor
     for (date in info) {
         for (branch in info[date]) {
             if (branch === "holliday" || branch === "weather") {
@@ -112,6 +96,7 @@ var con = mysql.createConnection({
     database: "Cities"
 });
 
+//take all the orders and group them by date branch and flavor + count how much from each flavor was sold
 function add_order(doc) {
     for (var i = 0; i < doc.flavor.length; i++) {//count flavors
         if (doc.date in info) {
@@ -160,7 +145,6 @@ async function CreateCSV() {
             if (err) throw err;
             setOutput(out);
         })
-
     } finally {
         await client.close();
     }
@@ -169,7 +153,6 @@ async function CreateCSV() {
 //when the "train model" button is pressed this is the function that it triggers
 module.exports.trainM =
 async function TrainModel() {
-    console.log("Ciiiii");
     await CreateCSV();
     var source = new bigml.Source(connection);
     source.create('./model.csv', function (error, sourceInfo) {
@@ -194,7 +177,7 @@ async function TrainModel() {
 //param data: {date, branch, flavor}
 module.exports.Predict =
 function PredictAmount(data) {
-    console.log("kkkkko")
+    //erange the data for the prediction
     const datetime = new Date(data.date);
     var day = datetime.getDay();//day
     var month = datetime.getMonth();//month
@@ -223,8 +206,8 @@ function PredictAmount(data) {
     var gold = (cities[data.branch]["ages_56-64"] == null) ? ((1 / 6) * 100) : ((cities[data.branch]["ages_56-64"] / size) * 100);
     var old = (cities[data.branch]["ages_65-inf"] == null) ? ((1 / 6) * 100) : ((cities[data.branch]["ages_65-inf"] / size) * 100);
     var prediction = new bigml.Prediction(connection);
-    console.log("po")
     prediction.create(curr_model, {
+        //prepare to present the result
         'day': day,
         'month': month,
         'season': season,
@@ -240,11 +223,8 @@ function PredictAmount(data) {
         'flavor': data.flavor
 
     }, function (error, predictInfo) {
-        console.log("looo")
         if (!error && predictInfo) {
-            console.log(predictInfo.object.output);
             console.log(predictInfo);
-            console.log("here your ans:")
 
             var days = {
                 1: "Sunday",
@@ -276,39 +256,8 @@ function PredictAmount(data) {
             var big_str = str1 + str2 + str3+ ", Prediction: "+predictInfo.object.output;
             fs.writeFile('prediction.txt', JSON.stringify(big_str), function (err) {
                 if (err) return console.log(err);
-                console.log("Ciii of txt");
             });
-            // setVal(predictInfo);
-            // var days = {
-            //     1: "Sunday",
-            //     2: "Monday",
-            //     3: "Tuesday",
-            //     4: "Wednesday",
-            //     5: "Thursday",
-            //     6: "Friday",
-            //     7: "Saturday"
-            // };
-            // var monthNames = {
-            //     1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
-            //     7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"
-            // };
-            // var hol;
-            // var holidays = predictInfo.input_data.holiday;
-            // if (holidays===true){
-            //     hol=" YES "
-            // }
-            // else{
-            //     hol=" NO "
-            // }
-            // var day = "Day: " + days[predictInfo.input_data.day];
-            // var month = " Month: " + monthNames[predictInfo.input_data.month]
-            // var str1 = day + month + " Season: " + predictInfo.input_data.season + " Holiday: " + hol + " Population size: " + predictInfo.input_data.size + " Population Type: " + predictInfo.input_data.religion;
-            // var str2 = " Teens: " + predictInfo.input_data.teen + " toddlers: " + predictInfo.input_data.todller + " Middle: " + predictInfo.input_data.middle + " Adults: " + predictInfo.input_data.adult;
-            // var str3 = " Old: " + predictInfo.input_data.old + " Gold: " + predictInfo.input_data.gold;
-            // var big_str = str1 + str2 + str3;
-            // console.log(big_str);
             return predictInfo;
-            // console.log("lama");
         } else if (error) {
             console.error(error);
         }
@@ -320,9 +269,6 @@ function PredictAmount(data) {
 // async function main() {
 //     TrainModel();
 //     setTimeout(PredictAmount, 30000, {date: "2023-10-12", branch: 'אורות', flavor: "Chocolate"});
-//     setTimeout(console.log,30000,val);
-//     // sleep(60000);
-//     // PredictAmount({date: "2023-10-12", branch: 'אורות', flavor: "Chocolate"})
 // }
 // //
 // main();

@@ -51,6 +51,7 @@ axios({
     var table = obj.Table;
     for (let index = 0; index < 100 && index<table.length; index++) {
       const city = table[index];
+      //figure out the religion
       if(city.PepoleNumberJewish=='-'){
         var rel = "arab";
       }else if(city.PepoleNumberArab =='-'){
@@ -60,6 +61,7 @@ axios({
       }
       var size = 0;
       var people = city.PepoleNumber;
+      //convert the number of people from string to int 
       for (let i = 0; i < people.length; i++) {
         if(people.charAt(i)!=','){
           size*=10;
@@ -78,6 +80,7 @@ axios({
   });
 }
 
+//each page have only 20 cities so we need 6 pages
 for (let index = 1; index < 6; index++) {
   religion(index);
 }
@@ -100,14 +103,13 @@ axios({
     var old = isNaN(parseInt(city.גיל_65_פלוס)) ? 0 : parseInt(city.גיל_65_פלוס);
     var sql = "UPDATE Cities SET `ages_0-5` = "+ todller +
     ", `ages_6-18` = " + teen +
-    ", `ages_19-45` = " + adult+
-    ", `ages_46-55` = "+middle+
-    ", `ages_56-64` = "+gold+
-    ", `ages_65-inf` = "+old+
-    " WHERE name = '"+ name+"';";
+    ", `ages_19-45` = " + adult +
+    ", `ages_46-55` = " + middle +
+    ", `ages_56-64` = " + gold +
+    ", `ages_65-inf` = " + old +
+    " WHERE name = '" + name+ "';";
     try{
         con.query(sql, function (err, result) {
-          // console.log("1 record updated");
         });
       }
       catch(error){
@@ -115,45 +117,3 @@ axios({
       }
   }
 })
-//
-// //send cities to kafka
-// const uuid = require("uuid");
-// const Kafka = require("node-rdkafka");
-//
-// const kafkaConf = {
-//   "group.id": "cloudkarafka-example",
-//   "metadata.broker.list": "	dory.srvs.cloudkafka.com",
-//   "socket.keepalive.enable": true,
-//   "security.protocol": "SASL_SSL",
-//   "sasl.mechanisms": "SCRAM-SHA-256",
-//   "sasl.username": "4ddaxdn5",
-//   "sasl.password": "76GXA4beiAeGYzQW_MCR-o1Ugi08DL9G",
-//   "debug": "generic,broker,security"
-// };
-//
-// const prefix = "mo0oa5gi-";
-// const topic = `${prefix}new`;
-// const producer = new Kafka.Producer(kafkaConf);
-//
-// const genMessage = m => new Buffer.alloc(m.length,m);
-//
-// producer.on("ready", function(arg) {
-//   console.log(`producer is ready.`);
-// });
-// producer.connect();
-//
-// var cities = []
-//
-// con.query("SELECT name FROM Cities", function (err, result, fields) {
-//   if (err) throw err;
-//   for(var i=0; i<result.length;i++){
-//     cities.push(result[i].name);
-//   }
-// });
-//
-// module.exports.publish= function()
-// {
-//   m=JSON.stringify(cities);
-//   producer.produce(topic, -1, genMessage(m), uuid.v4());
-//   //producer.disconnect();
-// }
